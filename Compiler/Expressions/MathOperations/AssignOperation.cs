@@ -14,9 +14,15 @@
                 result = null;
                 return $"can't assign {rhs.Type} and {lhs.Type}";
             }
-
+            
             if (lhs.Type != rhs.Type)
                 rhs = new TypeCast(rhs, lhs.Type);
+            
+            if (!lhs.Writable)
+            {
+                result = null;
+                return "left hand side of assignment is not writable";
+            }
 
             result = new AssignOperation(lhs.Type, lhs, rhs);
             return null;

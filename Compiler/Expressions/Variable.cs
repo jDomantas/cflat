@@ -4,7 +4,7 @@
     {
         public Name Name { get; }
 
-        public Variable(Name name, DataType type) : base(type, true)
+        public Variable(Name name, DataType type, bool constant) : base(type, !constant)
         {
             Name = name;
             DoesUseRegisters = false;
@@ -40,7 +40,7 @@
                 return null;
             }
 
-            return new Variable(name, def.Type);
+            return new Variable(name, def.Type, def.IsConstant);
         }
 
         public override MathCalculation CompileAndGetStorage(CodeWriter writer, Definitions definitions)

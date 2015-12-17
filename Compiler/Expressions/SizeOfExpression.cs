@@ -36,7 +36,7 @@
                 if (!stream.ExpectAndConsume(')', state))
                     return null;
 
-                return new LiteralValue(variable.Type.GetSize());
+                return new LiteralValue(variable.ActualSize);
             }
             else
             {

@@ -2,15 +2,32 @@
 {
     class VariableDefinition : Sentence
     {
+        public int ActualSize { get; }
+        public int StackSize { get; }
+        public bool IsConstant { get; }
         public DataType Type { get; }
         public Name Name { get; }
         public MathExpression InitialValue { get; private set; }
 
         public VariableDefinition(DataType type, Name name, MathExpression value)
         {
+            ActualSize = type == null ? 0 : type.GetSize();
             Type = type;
             Name = name;
             InitialValue = value;
+            StackSize = type == null ? 0 : type.GetPaddedSize();
+        }
+
+        /// <summary>
+        /// For defining arrays on stack
+        /// </summary>
+        public VariableDefinition(DataType type, Name name, int arraySize)
+        {
+            ActualSize = StackSize = type.GetSize() * arraySize;
+            Name = name;
+            IsConstant = true;
+            InitialValue = null;
+            Type = new DataType(type.Name, type.PointerDepth + 1);
         }
         
         public override string ToString()
@@ -88,6 +105,36 @@
                 }
             }
 
+            if (stream.Peek() == '[')
+            {
+                // array definition
+                stream.Consume();
+                stream.SkipWhitespace();
+
+                MathExpression arraySize = MathExpression.TryRead(stream);
+                if (arraySize == null)
+                {
+                    state.Restore("invalid expression");
+                    return null;
+                }
+
+                if (!arraySize.IsConstant)
+                {
+                    state.Restore("array size must be constant");
+                    return null;
+                }
+
+                if (!stream.ExpectAndConsume(']', state))
+                    return null;
+
+                if (!stream.ExpectAndConsume(';', state))
+                    return null;
+
+                var def = new VariableDefinition(type, name, arraySize);
+                stream.CurrentDefinitions.AddVariableDefinition(def);
+                return def;
+            }
+
             if (stream.ExpectAndConsume(';', state))
             {
                 var def = new VariableDefinition(type, name, null);
@@ -102,7 +149,7 @@
         {
             writer.WriteLine($"; {ToString()}");
             if (InitialValue == null)
-                writer.WriteLine($"sub sp, {Type.GetSize()}");
+                writer.WriteLine($"sub sp, {StackSize}");
             else
                 InitialValue.CompileAndPlaceOnStack(writer, definitions);
 

@@ -151,9 +151,9 @@ namespace Compiler
                     bp = 0;
 
                 if (variable != null)
-                    stackAddress += v.Type.GetPaddedSize();
+                    stackAddress += v.StackSize;
                 if (bp != -1)
-                    bp += v.Type.GetPaddedSize();
+                    bp += v.StackSize;
             }
 
             stackAddress = bp - stackAddress;
