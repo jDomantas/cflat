@@ -2,6 +2,7 @@
 {
     class VariableDefinition : Sentence
     {
+        public bool IsArray { get; }
         public int ActualSize { get; }
         public int StackSize { get; }
         public bool IsConstant { get; }
@@ -11,6 +12,7 @@
 
         public VariableDefinition(DataType type, Name name, MathExpression value)
         {
+            IsArray = false;
             ActualSize = type == null ? 0 : type.GetSize();
             Type = type;
             Name = name;
@@ -23,7 +25,9 @@
         /// </summary>
         public VariableDefinition(DataType type, Name name, int arraySize)
         {
-            ActualSize = StackSize = type.GetSize() * arraySize;
+            IsArray = true;
+            StackSize = type.GetSize() * arraySize + 2; // size for storing pointer
+            ActualSize = type.GetSize() * arraySize;
             Name = name;
             IsConstant = true;
             InitialValue = null;
@@ -32,7 +36,9 @@
         
         public override string ToString()
         {
-            if (InitialValue == null)
+            if (IsArray)
+                return $"Variable: {Type.Dereferenced()} {Name}[{ActualSize / Type.Dereferenced().GetSize()}];";
+            else if (InitialValue == null)
                 return $"Variable: {Type} {Name};";
             else
                 return $"Variable: {Type} {Name} = {InitialValue};";
@@ -105,10 +111,9 @@
                 }
             }
 
-            if (stream.Peek() == '[')
+            if (stream.TestNext('['))
             {
                 // array definition
-                stream.Consume();
                 stream.SkipWhitespace();
 
                 MathExpression arraySize = MathExpression.TryRead(stream);
@@ -130,7 +135,7 @@
                 if (!stream.ExpectAndConsume(';', state))
                     return null;
 
-                var def = new VariableDefinition(type, name, arraySize);
+                var def = new VariableDefinition(type, name, arraySize.ConstantValue);
                 stream.CurrentDefinitions.AddVariableDefinition(def);
                 return def;
             }
@@ -149,11 +154,21 @@
         {
             writer.WriteLine($"; {ToString()}");
             if (InitialValue == null)
-                writer.WriteLine($"sub sp, {StackSize}");
+            {
+                if (IsArray)
+                {
+                    writer.WriteLine($"sub sp, {ActualSize}");
+                    writer.WriteLine("push sp");
+                }
+                else
+                {
+                    writer.WriteLine($"sub sp, {StackSize}");
+                }
+            }
             else
                 InitialValue.CompileAndPlaceOnStack(writer, definitions);
 
-            definitions.AddVariableDefinition(new VariableDefinition(Type, Name, null));
+            definitions.AddVariableDefinition(this);
         }
     }
 }

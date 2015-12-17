@@ -63,7 +63,6 @@ namespace Compiler
         public void WriteHeader()
         {
             WriteLine(".MODEL compact");
-            DecreaseIdentationLevel();
             WriteLine();
             WriteLine(".CODE");
             WriteLine("program:");
@@ -96,6 +95,7 @@ namespace Compiler
             WriteLine();
             WriteLine("__stackPayload1 db 4000h dup(?)");
             WriteLine("__stackPayload2 db 4000h dup(?)");
+            DecreaseIdentationLevel();
 
         }
     }

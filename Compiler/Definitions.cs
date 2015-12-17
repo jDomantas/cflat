@@ -47,7 +47,7 @@ namespace Compiler
             while (DefinedVariables.Peek() != FunctionMark)
             {
                 if (DefinedVariables.Peek() != BlockMark)
-                    totalSize += DefinedVariables.Peek().Type.GetPaddedSize();
+                    totalSize += DefinedVariables.Peek().StackSize;
                 DefinedVariables.Pop();
             }
 
@@ -80,7 +80,7 @@ namespace Compiler
             int totalSize = 0;
             while (DefinedVariables.Peek() != BlockMark)
             {
-                totalSize += DefinedVariables.Peek().Type.GetPaddedSize();
+                totalSize += DefinedVariables.Peek().StackSize;
                 DefinedVariables.Pop();
             }
 
