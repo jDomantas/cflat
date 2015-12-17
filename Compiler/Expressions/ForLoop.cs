@@ -62,7 +62,7 @@ namespace Compiler.Expressions
             }
 
             stream.SkipWhitespace();
-            MathOperation condition = MathOperation.TryRead(stream);
+            MathExpression condition = MathOperation.TryRead(stream);
             if (condition == null)
             {
                 state.Restore("invalid condition");
@@ -83,6 +83,13 @@ namespace Compiler.Expressions
             if (condition.Type != DataType.Flags)
             {
                 state.Restore($"invalid condition type, expected: flags, got: {condition.Type}");
+                return null;
+            }
+
+            MathOperation cond = condition as MathOperation;
+            if (cond == null)
+            {
+                state.Restore("invalid condition");
                 return null;
             }
 
@@ -121,7 +128,7 @@ namespace Compiler.Expressions
 
             state.RestoreDefinitions();
 
-            return new ForLoop(init, condition, incrementer, body);
+            return new ForLoop(init, cond, incrementer, body);
         }
 
         public override void Compile(CodeWriter writer, Definitions definitions)
@@ -168,7 +175,7 @@ namespace Compiler.Expressions
             if (bytes > 0)
             {
                 writer.WriteLine($"; exiting for, popping {bytes} bytes");
-                writer.WriteLine($"pop_bytes {bytes}");
+                writer.WriteLine($"add sp, {bytes}");
             }
         }
     }

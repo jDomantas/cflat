@@ -78,6 +78,7 @@
     <Compile Include="Expressions\Name.cs" />
     <Compile Include="Expressions\NullConstant.cs" />
     <Compile Include="Expressions\ParameterList.cs" />
+    <Compile Include="Expressions\ReferenceOperator.cs" />
     <Compile Include="Expressions\ReturnStatement.cs" />
     <Compile Include="Expressions\Sentence.cs" />
     <Compile Include="Expressions\SizeOfExpression.cs" />

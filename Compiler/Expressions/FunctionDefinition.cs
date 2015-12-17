@@ -120,11 +120,14 @@ namespace Compiler.Expressions
 
             Body.Compile(writer, definitions);
 
-            writer.WriteLine("pop bp");
-            if (Parameters.TotalSize > 0)
-                writer.WriteLine($"ret {Parameters.TotalSize}");
-            else
-                writer.WriteLine("ret");
+            if (!Body.IsTerminating)
+            {
+                writer.WriteLine("pop bp");
+                if (Parameters.TotalSize > 0)
+                    writer.WriteLine($"ret {Parameters.TotalSize}");
+                else
+                    writer.WriteLine("ret");
+            }
 
             definitions.ExitFunction();
 

@@ -7,7 +7,7 @@
 
         }
 
-        public static string TryCreate(MathExpression lhs, MathExpression rhs, out MathOperation result)
+        public static string TryCreate(MathExpression lhs, MathExpression rhs, out MathExpression result)
         {
             if (lhs.Type != rhs.Type && !rhs.Type.CanImplicitlyCastTo(lhs.Type))
             {

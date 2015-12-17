@@ -75,7 +75,7 @@
             }
             else
             {
-                Value value = Value.TryRead(stream);
+                MathExpression value = Value.TryRead(stream);
                 if (value == null)
                 {
                     state.Restore("invalid value");

@@ -1,14 +1,18 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 
 namespace Compiler.Expressions
 {
     class Block
     {
+        public bool IsTerminating { get; }
         public Sentence[] Sentences { get; }
 
         public Block(Sentence[] sentences)
         {
             Sentences = sentences;
+
+            IsTerminating = Sentences.Any(sentence => sentence.IsTerminating);
         }
         
         public static Block TryRead(SymbolStream stream)
@@ -66,19 +70,26 @@ namespace Compiler.Expressions
             for (int i = 0; i < Sentences.Length; i++)
             {
                 Sentences[i].Compile(writer, definitions);
-                if (Sentences[i].GetType() == typeof(ReturnStatement))
+                if (Sentences[i].IsTerminating)
                     break;
             }
 
-            int bytesToPop = definitions.ExitBlock();
-            if (bytesToPop > 0)
+            if (!IsTerminating)
             {
-                writer.WriteLine($"; exiting block, pop {bytesToPop} bytes");
-                writer.WriteLine($"pop_bytes {bytesToPop}");
+                int bytesToPop = definitions.ExitBlock();
+                if (bytesToPop > 0)
+                {
+                    writer.WriteLine($"; exiting block, pop {bytesToPop} bytes");
+                    writer.WriteLine($"add sp, {bytesToPop}");
+                }
+                else
+                {
+                    writer.WriteLine("; exiting block, nothing popped");
+                }
             }
             else
             {
-                writer.WriteLine("; exiting block, nothing popped");
+                writer.WriteLine("; block is terminating don't have to do anything here");
             }
 
             writer.DecreaseIdentationLevel();

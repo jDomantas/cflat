@@ -84,7 +84,7 @@ namespace Compiler.Expressions
             }
         }
 
-        public new static MathOperation TryRead(SymbolStream stream)
+        public new static MathExpression TryRead(SymbolStream stream)
         {
             var state = stream.SaveState();
 
@@ -112,7 +112,7 @@ namespace Compiler.Expressions
                     var rhs = values.Pop();
                     var lhs = values.Pop();
                     var operation = operators.Pop();
-                    MathOperation res;
+                    MathExpression res;
                     string err = TryCreateOperation(lhs, rhs, operation, out res);
                     if (err != null)
                     {
@@ -146,7 +146,7 @@ namespace Compiler.Expressions
                 return null;
             }
 
-            return (MathOperation)values.Peek();
+            return values.Peek();
         }
 
         private static MathExpression TryReadOperand(SymbolStream stream)
@@ -245,7 +245,7 @@ namespace Compiler.Expressions
             return Op.Unknown;
         }
 
-        private static string TryCreateOperation(MathExpression lhs, MathExpression rhs, Op op, out MathOperation operation)
+        private static string TryCreateOperation(MathExpression lhs, MathExpression rhs, Op op, out MathExpression operation)
         {
             switch (op)
             {

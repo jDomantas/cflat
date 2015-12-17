@@ -2,9 +2,11 @@
 {
     abstract class Sentence
     {
+        public bool IsTerminating { get; protected set; }
+
         public Sentence()
         {
-
+            IsTerminating = false;
         }
         
         public static Sentence TryRead(SymbolStream stream, bool requireSemicolon = true)

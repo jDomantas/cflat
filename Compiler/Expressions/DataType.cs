@@ -29,6 +29,11 @@ namespace Compiler.Expressions
             return 1;
         }
 
+        public int GetPaddedSize()
+        {
+            return GetSize() + GetSize() % 2;
+        }
+
         public DataType Dereferenced()
         {
             if (PointerDepth == 0)
@@ -42,13 +47,13 @@ namespace Compiler.Expressions
             if (other == this)
                 return true;
 
-            // allow casting to and from void pointers
-            if (PointerDepth > 0 && other.PointerDepth > 0 && (Name == Name.Void || other.Name == Name.Void))
+            // allow casting pointers
+            if (PointerDepth > 0 && other.PointerDepth > 0)
                 return true;
 
-            // disallow casting other pointers
-            if (PointerDepth > 0 || other.PointerDepth > 0)
-                return false;
+            // allow casting 2 byte sized stuff to pointers
+            if ((GetSize() == 2 && other.PointerDepth > 0) || (other.GetSize() == 2 && PointerDepth > 0))
+                return true;
 
             // allow casting arithmetic types
             return HasBuiltinAritmetic() && other.HasBuiltinAritmetic();

@@ -22,7 +22,7 @@
                 rhs = new TypeCast(rhs, lhs.Type);
             else if (lhs.Type != rhs.Type && lhs.Type.CanImplicitlyCastTo(rhs.Type))
                 lhs = new TypeCast(lhs, rhs.Type);
-            else
+            else if (lhs.Type != rhs.Type)
             {
                 left = right = null;
                 return $"can't {operation.ToString().ToLower()} types {lhs.Type} and {rhs.Type}";
@@ -74,20 +74,20 @@
                 if (leftPushed)
                 {
                     writer.WriteLine($"{pop} {regA}");
-                    writer.WriteLine($"{operation} {regA} {right.Value}");
+                    writer.WriteLine($"{operation} {regA}, {right.Value}");
                     return new MathCalculation(MathCalculation.Type.Register, regA);
                 }
                 else if (left.StorageType == MathCalculation.Type.DataValue ||
                          left.StorageType == MathCalculation.Type.StackValue ||
                          left.StorageType == MathCalculation.Type.Imediate)
                 {
-                    writer.WriteLine($"mov {regA} {left.Value}");
-                    writer.WriteLine($"{operation} {regA} {right.Value}");
+                    writer.WriteLine($"mov {regA}, {left.Value}");
+                    writer.WriteLine($"{operation} {regA}, {right.Value}");
                     return new MathCalculation(MathCalculation.Type.Register, regA);
                 }
                 else if (left.StorageType == MathCalculation.Type.Register)
                 {
-                    writer.WriteLine($"{operation} {left.Value} {right.Value}");
+                    writer.WriteLine($"{operation} {left.Value}, {right.Value}");
                     return left;
                 }
                  
@@ -96,7 +96,7 @@
             {
                 if (AllowSwappingOperands)
                 {
-                    writer.WriteLine($"{operation} {right.Value} {left.Value}");
+                    writer.WriteLine($"{operation} {right.Value}, {left.Value}");
                     return right;
                 }
 
@@ -106,20 +106,20 @@
                 {
                     if (right.Value == regA)
                     {
-                        writer.WriteLine($"mov {regB} {left.Value}");
-                        writer.WriteLine($"{operation} {regB} {regA}");
+                        writer.WriteLine($"mov {regB}, {left.Value}");
+                        writer.WriteLine($"{operation} {regB}, {regA}");
                         return new MathCalculation(MathCalculation.Type.Register, regB);
                     }
                     else
                     {
-                        writer.WriteLine($"mov {regA} {left.Value}");
-                        writer.WriteLine($"{operation} {regA} {right.Value}");
+                        writer.WriteLine($"mov {regA}, {left.Value}");
+                        writer.WriteLine($"{operation} {regA}, {right.Value}");
                         return new MathCalculation(MathCalculation.Type.Register, regA);
                     }
                 }
                 else if (left.StorageType == MathCalculation.Type.Register)
                 {
-                    writer.WriteLine($"{operation} {left.Value} {right.Value}");
+                    writer.WriteLine($"{operation} {left.Value}, {right.Value}");
                     return left;
                 }
             }

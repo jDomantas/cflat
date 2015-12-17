@@ -15,7 +15,7 @@ namespace Compiler.Expressions
         {
             Parameters = parameters;
             AllNamesDefined = parameters.All(t => t.Item2 != null);
-            TotalSize = Parameters.Select(t => t.Item1.GetSize()).Sum();
+            TotalSize = Parameters.Select(t => t.Item1.GetPaddedSize()).Sum();
         }
         
         public bool DoesMatch(ParameterList other)

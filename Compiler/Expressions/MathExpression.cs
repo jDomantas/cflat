@@ -26,11 +26,11 @@ namespace Compiler.Expressions
         {
             var state = stream.SaveState();
 
-            MathOperation operation = MathOperation.TryRead(stream);
+            MathExpression operation = MathOperation.TryRead(stream);
             if (operation != null)
                 return operation;
 
-            Value value = Value.TryRead(stream);
+            MathExpression value = Value.TryRead(stream);
             if (value != null)
                 return value;
 
@@ -47,23 +47,21 @@ namespace Compiler.Expressions
         public void CompileAndPlaceOnStack(CodeWriter writer, Definitions definitions)
         {
             MathCalculation result = CompileAndGetStorage(writer, definitions);
-            if (result.StorageType == MathCalculation.Type.DataValue ||
-                result.StorageType == MathCalculation.Type.Imediate ||
-                result.StorageType == MathCalculation.Type.Register ||
-                result.StorageType == MathCalculation.Type.StackValue)
+            if (result.StorageType == MathCalculation.Type.DataValue || result.StorageType == MathCalculation.Type.StackValue)
             {
-                if (Type.GetSize() == 1)
-                {
-                    if (result.StorageType == MathCalculation.Type.StackValue || result.StorageType == MathCalculation.Type.DataValue)
-                    {
-                        writer.WriteLine($"mov al, {result.Value}");
-                        writer.WriteLine("push_byte al");
-                    }
-                    else
-                        writer.WriteLine($"push_byte {result.Value}");
-                }
+                if (result.Value.StartsWith("word"))
+                    writer.WriteLine($"mov ax, {result.Value}");
                 else
-                    writer.WriteLine($"push {result.Value}");
+                    writer.WriteLine($"mov al, {result.Value}");
+                writer.WriteLine("push ax");
+            }
+            else if (result.StorageType == MathCalculation.Type.Register)
+            {
+                writer.WriteLine($"push {result.Value.Substring(0, 1)}x");
+            }
+            else
+            {
+                writer.WriteLine($"push {result.Value}");
             }
         }
 

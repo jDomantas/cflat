@@ -47,7 +47,7 @@ namespace Compiler
             while (DefinedVariables.Peek() != FunctionMark)
             {
                 if (DefinedVariables.Peek() != BlockMark)
-                    totalSize += DefinedVariables.Peek().Type.GetSize();
+                    totalSize += DefinedVariables.Peek().Type.GetPaddedSize();
                 DefinedVariables.Pop();
             }
 
@@ -64,7 +64,7 @@ namespace Compiler
                 if (v == FunctionMark)
                     return totalSize;
                 if (v != BlockMark)
-                    totalSize += v.Type.GetSize();
+                    totalSize += v.Type.GetPaddedSize();
             }
 
             return totalSize;
@@ -80,7 +80,7 @@ namespace Compiler
             int totalSize = 0;
             while (DefinedVariables.Peek() != BlockMark)
             {
-                totalSize += DefinedVariables.Peek().Type.GetSize();
+                totalSize += DefinedVariables.Peek().Type.GetPaddedSize();
                 DefinedVariables.Pop();
             }
 
@@ -151,9 +151,9 @@ namespace Compiler
                     bp = 0;
 
                 if (variable != null)
-                    stackAddress += v.Type.GetSize();
+                    stackAddress += v.Type.GetPaddedSize();
                 if (bp != -1)
-                    bp += v.Type.GetSize();
+                    bp += v.Type.GetPaddedSize();
             }
 
             stackAddress = bp - stackAddress;

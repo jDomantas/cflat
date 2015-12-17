@@ -6,7 +6,7 @@
         {
         }
 
-        public new static Value TryRead(SymbolStream stream)
+        public new static MathExpression TryRead(SymbolStream stream)
         {
             var state = stream.SaveState();
 
@@ -30,7 +30,7 @@
             if (functionCall != null)
                 return functionCall;
 
-            AddressDereference array = ArrayAccess.TryRead(stream);
+            MathExpression array = ArrayAccess.TryRead(stream);
             if (array != null)
                 return array;
 
@@ -45,6 +45,10 @@
             AddressDereference dereference = AddressDereference.TryRead(stream);
             if (dereference != null)
                 return dereference;
+
+            ReferenceOperator reference = ReferenceOperator.TryRead(stream);
+            if (reference != null)
+                return reference;
 
             state.Restore("invalid math expression");
             return null;

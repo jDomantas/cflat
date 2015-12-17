@@ -2,7 +2,7 @@
 {
     class PointerSubtractOperation
     {
-        public static string TryCreate(MathExpression lhs, MathExpression rhs, out MathOperation result)
+        public static string TryCreate(MathExpression lhs, MathExpression rhs, out MathExpression result)
         {
             if ((lhs.Type.PointerDepth > 0 && rhs.Type.PointerDepth > 0) ||
                 (lhs.Type.PointerDepth > 0 && !rhs.Type.HasBuiltinAritmetic()) ||
@@ -14,7 +14,7 @@
 
             if (lhs.Type.PointerDepth > 0)
             {
-                if (rhs.Type != DataType.UInt)
+                if (rhs.Type.GetSize() < 2)
                     rhs = TypeCast.Expand(rhs);
 
                 int size = lhs.Type.Dereferenced().GetSize();
@@ -26,7 +26,7 @@
             }
             else
             {
-                if (lhs.Type != DataType.UInt)
+                if (lhs.Type.GetSize() < 2)
                     lhs = TypeCast.Expand(lhs);
 
                 int size = rhs.Type.Dereferenced().GetSize();

@@ -14,7 +14,7 @@
             }
         }
 
-        public static string TryCreate(Op direction, MathExpression lhs, MathExpression rhs, out MathOperation result)
+        public static string TryCreate(Op direction, MathExpression lhs, MathExpression rhs, out MathExpression result)
         {
             if (!rhs.IsConstant)
             {

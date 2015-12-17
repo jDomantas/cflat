@@ -13,6 +13,9 @@ namespace Compiler.Expressions
             Condition = condition;
             Body = body;
             ElseBody = elseBody;
+
+            if (ElseBody != null && Body.IsTerminating && ElseBody.IsTerminating)
+                IsTerminating = true;
         }
         
         public override string ToString()
@@ -34,7 +37,7 @@ namespace Compiler.Expressions
             if (!stream.ExpectAndConsume('(', state))
                 return null;
 
-            MathOperation condition = MathOperation.TryRead(stream);
+            MathExpression condition = MathOperation.TryRead(stream);
             if (condition == null)
             {
                 state.Restore("invalid condition");
@@ -58,6 +61,13 @@ namespace Compiler.Expressions
                 return null;
             }
 
+            MathOperation cond = condition as MathOperation;
+            if (cond == null)
+            {
+                state.Restore("invalid condition");
+                return null;
+            }
+
             stream.SkipWhitespace();
             Block body = Block.TryRead(stream);
 
@@ -72,7 +82,7 @@ namespace Compiler.Expressions
             stream.SkipWhitespace();
             
             if (!stream.ExpectAndConsumeString("else", state2))
-                return new IfClause(condition, body, null);
+                return new IfClause(cond, body, null);
 
             stream.SkipWhitespace();
             Block elseBody = Block.TryRead(stream);
@@ -82,7 +92,7 @@ namespace Compiler.Expressions
                 return null;
             }
 
-            return new IfClause(condition, body, elseBody);
+            return new IfClause(cond, body, elseBody);
         }
 
         public override void Compile(CodeWriter writer, Definitions definitions)

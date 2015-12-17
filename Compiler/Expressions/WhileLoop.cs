@@ -29,8 +29,15 @@ namespace Compiler.Expressions
             if (!stream.ExpectAndConsume('(', state))
                 return null;
 
-            MathOperation condition = MathOperation.TryRead(stream);
+            MathExpression condition = MathOperation.TryRead(stream);
             if (condition == null)
+            {
+                state.Restore("invalid condition");
+                return null;
+            }
+
+            MathOperation cond = condition as MathOperation;
+            if (cond == null)
             {
                 state.Restore("invalid condition");
                 return null;
@@ -70,7 +77,7 @@ namespace Compiler.Expressions
                 return null;
             }
 
-            return new WhileLoop(condition, body);
+            return new WhileLoop(cond, body);
         }
 
         public override void Compile(CodeWriter writer, Definitions definitions)

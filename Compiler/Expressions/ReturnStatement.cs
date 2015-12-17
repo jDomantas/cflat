@@ -9,6 +9,8 @@
         {
             Result = result;
             Type = null;
+
+            IsTerminating = true;
         }
         
         public override string ToString()

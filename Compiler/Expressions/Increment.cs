@@ -2,10 +2,10 @@
 {
     class Increment : Value
     {
-        public Value BaseValue { get; }
+        public MathExpression BaseValue { get; }
         public bool IsIncrementing { get; }
 
-        public Increment(Value baseValue, bool increment) : base(baseValue.Type, true)
+        public Increment(MathExpression baseValue, bool increment) : base(baseValue.Type, true)
         {
             BaseValue = baseValue;
             IsIncrementing = increment;
@@ -31,7 +31,7 @@
                 if (!stream.ExpectAndConsume('+', state))
                     return null;
 
-                Value inner = Value.TryRead(stream);
+                MathExpression inner = Value.TryRead(stream);
                 if (inner == null)
                 {
                     state.Restore("invalid value");
@@ -52,7 +52,7 @@
                 if (!stream.ExpectAndConsume('-', state))
                     return null;
 
-                Value inner = Value.TryRead(stream);
+                MathExpression inner = Value.TryRead(stream);
                 if (inner == null)
                 {
                     state.Restore("invalid value");

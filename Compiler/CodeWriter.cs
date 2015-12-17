@@ -61,18 +61,17 @@ namespace Compiler
         
         public void WriteHeader()
         {
-            WriteLine(".MODEL compact");
-            WriteLine(".STACK 7FFFh");
+            WriteLine(".MODEL tiny");
+            WriteLine(".STACK 4000h");
             WriteLine(".DATA");
             IncreaseIdentationLevel();
             WriteLine("__firstItemAddress dw 2");
             WriteLine("__firstBlockNext dw 0");
-            WriteLine("__firstBlockSize dw 16384");
-            WriteLine("__firstBlockPayload db 16380 dup(0)");
+            WriteLine("__firstBlockSize dw 4000h");
+            WriteLine("__firstBlockPayload db 3FFCh dup(?)");
             DecreaseIdentationLevel();
             WriteLine();
             WriteLine(".CODE");
-            WriteLine();
             WriteLine("program:");
             IncreaseIdentationLevel();
             WriteLine("; init data segment");
@@ -80,40 +79,12 @@ namespace Compiler
             WriteLine("mov ds, ax");
             WriteLine("; call main");
             WriteLine("call main");
+            WriteLine("; exit(0)");
             WriteLine("mov al, 0");
             WriteLine("mov ah, 4Ch");
             WriteLine("int 21h");
             DecreaseIdentationLevel();
             WriteLine();
-            WriteUtilityMacros();
-            WriteLine();
-            WriteLine();
-        }
-
-        public void WriteUtilityMacros()
-        {
-            WriteLine("; utility macros");
-            WriteLine("push_byte macro val");
-            IncreaseIdentationLevel();
-            WriteLine("sub sp, 1");
-            WriteLine("mov si, sp");
-            WriteLine("mov byte ptr ss:[si], val");
-            DecreaseIdentationLevel();
-            WriteLine("endm");
-            WriteLine();
-            WriteLine("pop_byte macro to");
-            IncreaseIdentationLevel();
-            WriteLine("mov si, sp");
-            WriteLine("mov to, byte ptr ss:[si]");
-            WriteLine("add sp, 1");
-            DecreaseIdentationLevel();
-            WriteLine("endm");
-            WriteLine();
-            WriteLine("pop_bytes macro count");
-            IncreaseIdentationLevel();
-            WriteLine("add sp, count");
-            DecreaseIdentationLevel();
-            WriteLine("endm");
         }
     }
 }
