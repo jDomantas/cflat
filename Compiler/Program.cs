@@ -62,7 +62,7 @@ namespace Compiler
                     function.Compile(writer, def);
                     writer.WriteLine();
                 }
-                writer.WriteLine("END program");
+                writer.WriteEnd();
 
                 writer.FlushToFile(output);
                 Console.WriteLine($"Output written to '{output}'");

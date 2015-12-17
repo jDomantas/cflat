@@ -87,7 +87,7 @@ namespace Compiler.Expressions
         public new static MathExpression TryRead(SymbolStream stream)
         {
             var state = stream.SaveState();
-
+            
             Stack<MathExpression> values = new Stack<MathExpression>();
             Stack<Op> operators = new Stack<Op>();
 
@@ -139,13 +139,7 @@ namespace Compiler.Expressions
                 values.Push(value);
                 valuesDone++;
             }
-
-            if (valuesDone == 1)
-            {
-                state.Restore("invalid operation");
-                return null;
-            }
-
+            
             return values.Peek();
         }
 
